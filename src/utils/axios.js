@@ -30,7 +30,7 @@ function interceptResponseSuccess(response) {
   return Promise.reject(response);
 }
 
-function interceptResponseFail(error) {
+function interceptRequestFail(error) {
   return new Promise((_, reject) => {
     if (isAxiosAbort(error)) {
       reject(error);
@@ -68,7 +68,7 @@ function interceptResponseFail(error) {
 if (process.env.NODE_ENV === 'development') {
   installMockInterceptor(axios, mockTemplates);
 }
-
-axios.interceptors.response.use(interceptResponseSuccess, interceptResponseFail);
+axios.interceptors.request.use(null, interceptRequestFail);
+axios.interceptors.response.use(interceptResponseSuccess);
 
 

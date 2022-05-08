@@ -8,7 +8,7 @@
       <el-icon><platform /></el-icon>
       <span>脚本监控</span>
     </el-menu-item>
-    <el-menu-item index="/request">
+    <el-menu-item index="/trace">
       <el-icon><camera /></el-icon>
       <span>请求监控</span>
     </el-menu-item>

@@ -106,8 +106,7 @@
 </template>
 
 <script>
-import { reactive, ref, unref } from 'vue';
-import { useRouter } from 'vue-router'; 
+import { reactive, ref } from 'vue';
 import { 
   Refresh,
   Search, 
@@ -135,7 +134,6 @@ export default {
     waLink,
   },
   setup() {
-    const router = useRouter();
     const [pageStore] = usePage();
     const initialForm = {
       status: '',
@@ -159,7 +157,6 @@ export default {
         .then((res) => {
           scriptList.value = res.rows;
           pageStore.total = res.count;
-          console.log(res)
         })
     });
 

@@ -1,7 +1,7 @@
 import Mock from 'mockjs';
 import { getScriptList } from './script';
 
-function transferResponse(data) {
+function transferResponse(data = {}) {
   return {
     code: 200,
     data: data.data,
@@ -27,6 +27,14 @@ function render(template, transferData) {
   }
 }
 
+function baseResponse() {
+  return {
+    code: 200,
+    data: '',
+  }
+}
+
 export default {
-  '/script/getList': render(getScriptList, transferResponse)
+  '/script/getList': render(getScriptList, transferResponse),
+  '/script/update': baseResponse
 };

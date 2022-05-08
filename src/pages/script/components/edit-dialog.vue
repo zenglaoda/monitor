@@ -24,6 +24,7 @@
         <el-input 
           v-model="form.remark" 
           placeholder="请输入" clearable type="textarea"
+          maxlength="200"
           :autosize="{minRows: 4}"
         />
       </el-form-item>
@@ -43,8 +44,11 @@
 
 <script setup>
 import { reactive, ref, toRef } from 'vue';
-import enumSelect from '@/components/enum-select.vue';
 import { SCRIPT_LEVEL_LIST, SCRIPT_STATUS_LIST } from '@/enum/script';
+import { updateScript } from '@/apis/script';
+import { useLoading } from '@/hooks';
+import enumSelect from '@/components/enum-select.vue';
+
 
 const props = defineProps({
   modelValue: {
@@ -76,6 +80,8 @@ const rules = reactive({
   status: requiredRules,
 });
 
+const [updateScriptAPI, loadingUpdate] = useLoading(updateScript);
+
 
 const onClose = () => {
   emit('update:modelValue', false);
@@ -84,8 +90,16 @@ const onClose = () => {
 const onConfirm = () => {
   refForm.value.validate()
     .then(() => {
-      emit('confirm');
-      onClose();
+      const data = {
+        level: form.level,
+        status: form.status,
+        remark: form.remark
+      };
+      updateScriptAPI(data)
+        .then((res) => {
+          emit('confirm');
+          onClose();
+        });
     })
     .catch(() => {});
 };

@@ -1,8 +1,7 @@
-import { axios } from '../utils/axios';
+import { axios } from '@/utils/axios';
 
 export const getScriptList = (params) => {
   return axios({
-    method: 'get',
     url: '/script/getList',
     params,
     plugins: {
@@ -10,3 +9,14 @@ export const getScriptList = (params) => {
     }
   })
 };
+
+export const updateScript = (data) => {
+  return axios({
+    url: '/script/update',
+    method: 'post',
+    data,
+    plugins: {
+      mock: '/script/update'
+    }
+  });
+}
