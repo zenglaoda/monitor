@@ -4,9 +4,6 @@ export const getScriptList = (params) => {
   return axios({
     url: '/script/getList',
     params,
-    plugins: {
-      mock: '/script/getList'
-    }
   })
 };
 
@@ -15,8 +12,13 @@ export const updateScript = (data) => {
     url: '/script/update',
     method: 'post',
     data,
-    plugins: {
-      mock: '/script/update'
-    }
+  });
+}
+
+export const getItem = (params) => {
+  return axios({
+    url: '/script/getItem',
+    method: 'get',
+    params,
   });
 }

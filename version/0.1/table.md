@@ -1,30 +1,12 @@
 ## 通用类型声明
 ```javascript
-interface UserAgent {
-  // 设备: SM-A125U
-  device: string, 
-  // 操作系统 ios: 13.0 | Android 10.0
-  os: string,
-  //  navigator.userAgent
-  ua: string,
-}
-
 interface ErrorMeta {
   type: "error" // unhandledrejection, rejectionhandled, error
   message: `Uncaught ReferenceError: b is not defined`,
+  stack,
   lineno: 15,
   colno: 13,
   filename: "http://localhost:3000/src/main.js",
-  // js error
-  error: {
-    message: 'b is not defined',
-    stack: 'ReferenceError: b is not defined \n at http://localhost:3000/src/main.js:15:13',
-  },
-  // promise error
-  reason: {
-    message: ''
-    stack: ''
-  }
 }
 ```
 
@@ -61,35 +43,48 @@ enum ScriptErrorStatus {
   5: '暂不解决'
 }
 
-interface scriptError {
-  id: number, 
-  // 对应的版本号
-  version: string,
-  // 同源错误的唯一id: 文件名 + 行号 + 列号
-  // sciprt error : 页面URL
-  eventId: string,
-  // 错误元信息
-  errorMeta: ErrorMeta,
+interface tb_script {
+  id: number,
+  // 项目id
+  projectId: number
   // 默认一般
   level: ScriptErrorLevel, 
   // 默认待解决
   status: ScriptErrorStatus,
-  // 环境
-  userAgent: UserAgent,
-  // 错误页面地址
-  page: string,
-  // 备注
+  // 备注信息
   remark: string,
   createTime: string,
   updateTime: string,
 }
 
-```
-
-## 埋点日志表 tb_trace
-```javascript
-interface tb_trace {
+interface tb_script_log {
   id: number,
+  // 事件唯一id
+  eventId: string
+  // 对应的版本号
+  version: string,
+  // 错误元信息
+  errorMeta: ErrorMeta,
+  // 环境
+  userAgent: string,
+  createTime: string,
+  updateTime: string,
+}
+
+```
+eventId: 
+  1. 事件唯一id
+  2. 可以由客户端提供
+  3. 由服务器生成 md5(projectId-slat), slat默认为(filename-lineno-clono) 
+
+
+## 埋点日志表 tb_debug
+```javascript
+interface tb_track {
+  id: number,
+  // 项目id
+  projectId: number,
+  debugId: string,
   // 描述
   description: string,
   // true: 使用中， false: 暂不启用
@@ -100,14 +95,13 @@ interface tb_trace {
   updateTime: string,
 }
 
-interface tb_trace_log {
+interface tb_debug_log {
   id: number,
-  // tb_trace.id
-  traceId: number,
+  debugId: string,
   // 埋点内容
   content: string,
   // navigator.useerAgent
-  userAgent: UserAgent,
+  userAgent: string,
   // 创建时间戳
   createTime: string,
   // 修改时间戳

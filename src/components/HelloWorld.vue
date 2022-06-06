@@ -16,6 +16,9 @@ export default defineComponent({
     return {
       name: 'demo'
     };
+  },
+  props: {
+    count: null
   }
 })
 </script>
@@ -23,6 +26,10 @@ export default defineComponent({
 
 <template>
   <h1>{{ msg }}</h1>
+  <p>
+    {{count}}
+    <button @click="$emit('set', 3)">set</button>
+  </p>
   <h2>{{name}}</h2>
 </template>
 

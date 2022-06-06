@@ -6,8 +6,8 @@
     :page-size="data.pageSize"
     v-model:currentPage="data.page"
     v-model:page-size="data.pageSize"
-    @size-change="onSizeChange"
-    @current-change="onPageChange"
+    @update:page-size="onSizeChange"
+    @update:current-page="onPageChange"
   />
 </template>
 <script setup>
@@ -23,6 +23,7 @@ const props = defineProps({
 });
 
 const { data } = toRefs(props);
+
 
 const onPageChange = () => {
   emits('change', data);

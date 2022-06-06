@@ -20,7 +20,7 @@
       v-model="form.date"
       start-placeholder="开始时间"
       end-placeholder="结束时间"
-      type="datetimerange"
+      type="daterange"
     />
     <el-button
       type="primary" 
@@ -43,16 +43,15 @@
     <el-table
       :data="scriptList" 
       style="width: 100%" 
-      stripe border 
+      stripe 
+      border
       header-row-class-name="wag-table-header"
     >
-      <el-table-column fixed="left" prop="path" label="地址">
+      <el-table-column fixed="left" prop="path" label="ID">
         <template v-slot:default="{row}">
-          <div class="wa-cell wag-ellipsis-3">
-            <waLink target="_blank" :href="row.page">
-              {{row.page}}
-            </waLink>
-          </div>
+          <waLink target="_blank" :to="{'path': '/script/item', 'query': {id: row.id}}">
+            {{row.id}}
+          </waLink>
         </template>
       </el-table-column>
       <el-table-column prop="level" label="错误等级" width="84">
@@ -68,7 +67,7 @@
       <el-table-column prop="errorMeta" label="错误信息" min-width="200">
         <template v-slot="{row}">
           <div class="wa-cell wag-ellipsis-3">
-            {{row.errorMeta.message}}
+            {{row.message}}
           </div>
         </template>
       </el-table-column>
@@ -77,16 +76,11 @@
           {{formatViewDate(row.createTime)}}
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="120">
+      <el-table-column fixed="right" label="操作" width="120" align="center">
         <template v-slot="{row}">
           <el-button type="text" @click="onEdit(row)">
             编辑
           </el-button>
-          <waLink class="wag-link" :to="{path: '/script/item', query: {id: row.id}}">
-            <el-button type="text">
-              查看
-            </el-button>
-          </waLink>
         </template>
       </el-table-column>
     </el-table>
@@ -118,8 +112,8 @@ import {
   SCRIPT_STATUS_LABEL,
 } from '@/enum/script';
 import { getScriptList } from '@/apis/script';
-import { shallowCopy } from '@/utils/share';
 import { getQueryDate, formatViewDate } from '@/utils/date';
+import { isObject } from '@/utils/share';
 import { usePage, useLoading } from '@/hooks';
 import enumSelect from '@/components/enum-select.vue';
 import waPagination from '@/components/wa-pagination.vue';
@@ -135,15 +129,27 @@ export default {
   },
   setup() {
     const [pageStore] = usePage();
-    const initialForm = {
-      status: '',
-      level: '',
-      date: []
-    };
-    const form = reactive(initialForm);
+    const form = reactive({});
     const scriptList = ref([]);
     const showEditDialog = ref(false);
     const editItem = ref({});
+
+    const resetForm = () => {
+      form.status = '';
+      form.level =  '';
+      form.date = [];
+    };
+
+    const extractMessage = (item) => {
+      let message = '';
+      try {
+        const errorMeta = JSON.parse(item.errorMeta);
+        if (isObject(errorMeta)) {
+          message = errorMeta.message;
+        }
+      } catch(e) {}
+      return message;
+    }
 
     const [getList, loadingList] = useLoading(function() {
       const param = {
@@ -155,7 +161,10 @@ export default {
       };
       return getScriptList(param)
         .then((res) => {
-          scriptList.value = res.rows;
+          scriptList.value = res.rows.map(item => {
+            item.message = extractMessage(item);
+            return item;
+          });
           pageStore.total = res.count;
         })
     });
@@ -167,7 +176,7 @@ export default {
 
     const onReset = () => {
       pageStore.page = 1;
-      Object.assign(form, initialForm);
+      resetForm();
       getList();
     }
 
@@ -176,6 +185,7 @@ export default {
       showEditDialog.value = true;
     };
 
+    resetForm();
     getList();
 
     return {

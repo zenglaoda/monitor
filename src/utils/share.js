@@ -7,3 +7,8 @@ export function shallowCopy(data) {
   });
   return res;
 }
+
+
+export function isObject(o) {
+  return Object.prototype.toString.call(o).toLowerCase().slice(8, -1) === 'object';
+}

@@ -6,9 +6,14 @@ import dayjs from "dayjs";
  * @returns {{sTime: number, eTime: number}}
 */
 export function getQueryDate(date) {
+  const format = 'YYYY-MM-DD HH:mm:ss';
   let [sTime='', eTime=''] = date;
-  sTime && (sTime = sTime.getTime());
-  eTime && (eTime = eTime.getTime());
+  if (sTime) {
+    sTime = dayjs(sTime).hour(0).minute(0).second(0).format(format);
+  }
+  if (eTime) {
+    eTime = dayjs(eTime).hour(23).minute(59).second(59).format(format);
+  }
   return {
     sTime,
     eTime

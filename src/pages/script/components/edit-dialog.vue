@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, toRef } from 'vue';
+import { reactive, ref, toRef, unref } from 'vue';
 import { SCRIPT_LEVEL_LIST, SCRIPT_STATUS_LIST } from '@/enum/script';
 import { updateScript } from '@/apis/script';
 import { useLoading } from '@/hooks';
@@ -74,8 +74,8 @@ const form = toRef(props, 'item');
 
 const refForm = ref();
 
-const requiredRules = { required: true }
-const rules = reactive({
+const requiredRules = { required: true };
+const rules = ({
   level: requiredRules,
   status: requiredRules,
 });
@@ -90,10 +90,12 @@ const onClose = () => {
 const onConfirm = () => {
   refForm.value.validate()
     .then(() => {
+      const formData = unref(form);
       const data = {
-        level: form.level,
-        status: form.status,
-        remark: form.remark
+        id: props.item.id,
+        level: formData.level,
+        status: formData.status,
+        remark: formData.remark
       };
       updateScriptAPI(data)
         .then((res) => {

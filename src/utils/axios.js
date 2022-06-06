@@ -1,12 +1,14 @@
 import Axios from 'axios';
-import { REQUEST_TIMEOUT, REQUEST_BASE_URL } from '@/config/request';
+import { 
+  REQUEST_TIMEOUT, 
+  REQUEST_BASE_URL 
+} from '@/config/request';
 import { 
   isAxiosError, 
   isAxiosAbort, 
   isAxiosTimeout,
   installMockInterceptor,
 } from '@/lib/axios-plugins';
-
 import { Notify, Message } from './message';
 
 // enabled in the development env
@@ -21,6 +23,7 @@ export const axios = Axios.create({
 
 function interceptResponseSuccess(response) {
   const { code, message, data } = response.data;
+
   if (message) {
     Message(message);
   }
@@ -30,7 +33,7 @@ function interceptResponseSuccess(response) {
   return Promise.reject(response);
 }
 
-function interceptRequestFail(error) {
+function interceptResponseFail(error) {
   return new Promise((_, reject) => {
     if (isAxiosAbort(error)) {
       reject(error);
@@ -65,10 +68,11 @@ function interceptRequestFail(error) {
   });
 }
 
+
 if (process.env.NODE_ENV === 'development') {
   installMockInterceptor(axios, mockTemplates);
 }
-axios.interceptors.request.use(null, interceptRequestFail);
-axios.interceptors.response.use(interceptResponseSuccess);
+
+axios.interceptors.response.use(interceptResponseSuccess, interceptResponseFail);
 
 
